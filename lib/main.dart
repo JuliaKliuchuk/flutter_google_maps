@@ -15,6 +15,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       // home: AuthorizationPage(),
+      theme: ThemeData(
+        primaryColor: Colors.green,
+        primarySwatch: Colors.green,
+      ),
       initialRoute: RouteHelper.getAuthorizationPage(),
       getPages: RouteHelper.routes,
     );

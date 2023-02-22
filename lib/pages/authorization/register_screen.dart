@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../routes/route.dart';
-import '../../utils/colors.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -83,9 +82,7 @@ class _RegisterState extends State<Register> {
                 onTap: () => _submitForm(),
                 child: Container(
                   height: 50,
-                  decoration: const BoxDecoration(
-                    color: AppColors.mainColor,
-                  ),
+                  decoration: const BoxDecoration(color: Colors.green),
                   child: const Center(
                     child: Text(
                       'LOG IN',

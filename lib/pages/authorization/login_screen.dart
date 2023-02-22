@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../routes/route.dart';
-import '../../utils/colors.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -14,8 +13,15 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
 
-  final _loginController = TextEditingController();
-  final _passController = TextEditingController();
+  final _loginController = TextEditingController(text: '123');
+  final _passController = TextEditingController(text: '123123');
+
+  @override
+  void initState() {
+    super.initState();
+    _loginController.text = '123';
+    _passController.text = '123123';
+  }
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
@@ -69,9 +75,7 @@ class _LoginState extends State<Login> {
                 onTap: () => _submitForm(),
                 child: Container(
                   height: 50,
-                  decoration: const BoxDecoration(
-                    color: AppColors.mainColor,
-                  ),
+                  decoration: const BoxDecoration(color: Colors.green),
                   child: const Center(
                     child: Text(
                       'LOG IN',
