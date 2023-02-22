@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/auth_controller.dart';
+import '../../controllers/images_controller.dart';
 import '../../models/auth_model.dart';
 import '../../routes/route.dart';
 import '../../widgets/custom_snack_bar.dart';
@@ -32,6 +33,7 @@ class _RegisterState extends State<Register> {
       authController.registration(data).then((resp) {
         if (resp.status == 200) {
           Get.offNamed(RouteHelper.getInitial());
+          Get.find<ImageController>().getImageList();
         } else {
           customSnackBar('User with such data already exists');
         }

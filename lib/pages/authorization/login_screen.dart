@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/auth_controller.dart';
+import '../../controllers/images_controller.dart';
 import '../../routes/route.dart';
 import '../../widgets/custom_snack_bar.dart';
 
@@ -15,8 +16,8 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
 
-  final _loginController = TextEditingController();
-  final _passController = TextEditingController();
+  final _loginController = TextEditingController(text: 'yuliya');
+  final _passController = TextEditingController(text: '12345678');
 
   void login(AuthController authController) {
     String login = _loginController.text.trim();
@@ -26,6 +27,7 @@ class _LoginState extends State<Login> {
       authController.login(login, password).then((resp) {
         if (resp.status == 200) {
           Get.toNamed(RouteHelper.getInitial());
+          Get.find<ImageController>().getImageList();
         } else {
           customSnackBar('User not registered');
         }
