@@ -13,9 +13,4 @@ class AuthModel {
     data['password'] = password;
     return data;
   }
-
-  AuthModel.fromJson(Map<String, dynamic> json) {
-    login = json['login'];
-    password = json['password'];
-  }
 }
