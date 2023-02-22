@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_maps/routes/route.dart';
 import 'package:get/get.dart';
+import 'helper/dependencies.dart' as dep;
 
-void main() {
+main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await dep.init();
+
   runApp(const MyApp());
 }
 

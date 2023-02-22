@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../controllers/auth_controller.dart';
+import '../../models/auth_model.dart';
 import '../../routes/route.dart';
+import '../../widgets/custom_snack_bar.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -17,19 +20,23 @@ class _RegisterState extends State<Register> {
   final _passController = TextEditingController();
   final _confirmPassController = TextEditingController();
 
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      Get.toNamed(RouteHelper.getInitial());
-    }
-  }
+  void registration(AuthController authController) {
+    String login = _loginController.text.trim();
+    String password = _passController.text.trim();
 
-  @override
-  void dispose() {
-    _loginController.dispose();
-    _passController.dispose();
-    _confirmPassController.dispose();
-    super.dispose();
+    if (_formKey.currentState!.validate()) {
+      AuthModel data = AuthModel(
+        login: login,
+        password: password,
+      );
+      authController.registration(data).then((resp) {
+        if (resp.status == 200) {
+          Get.offNamed(RouteHelper.getInitial());
+        } else {
+          customSnackBar('User with such data already exists');
+        }
+      });
+    }
   }
 
   @override
@@ -79,7 +86,7 @@ class _RegisterState extends State<Register> {
               // submit button
               const SizedBox(height: 20),
               GestureDetector(
-                onTap: () => _submitForm(),
+                onTap: () => registration,
                 child: Container(
                   height: 50,
                   decoration: const BoxDecoration(color: Colors.green),
@@ -99,7 +106,6 @@ class _RegisterState extends State<Register> {
   }
 
   String? _validateLogin(String? value) {
-    // String login = _loginController.text.trim();
     if (value == null || value.isEmpty) {
       return 'Please enter login';
     } else {
@@ -110,8 +116,8 @@ class _RegisterState extends State<Register> {
   String? _validatePass(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter password';
-    } else if (value.length != 6) {
-      return 'Password can not be less than 6 characters';
+    } else if (value.length != 8) {
+      return 'Password can not be less than 8 characters';
     } else {
       return null;
     }
@@ -120,6 +126,8 @@ class _RegisterState extends State<Register> {
   String? _validateConfirmPass(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter password';
+    } else if (value.length != 8) {
+      return 'Password can not be less than 8 characters';
     } else if (_passController.text != value) {
       return 'Password mismatch';
     } else {
