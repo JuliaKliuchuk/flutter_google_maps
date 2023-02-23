@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/auth_controller.dart';
-import '../../controllers/images_controller.dart';
 import '../../routes/route.dart';
 import '../../widgets/custom_snack_bar.dart';
 
@@ -27,7 +26,7 @@ class _LoginState extends State<Login> {
       authController.login(login, password).then((resp) {
         if (resp.status == 200) {
           Get.toNamed(RouteHelper.getInitial());
-          Get.find<ImageController>().getImageList();
+          // Get.find<ImageController>().getImageList();
         } else {
           customSnackBar('User not registered');
         }

@@ -9,6 +9,7 @@ class AppConstans {
 
 // images
   static const String IMAGE_URL = '/api/image';
+  static const String POST_IMAGE_URL = '/api/image';
 
   static const String TOKEN = '';
 }

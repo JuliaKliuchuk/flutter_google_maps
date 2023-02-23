@@ -1,3 +1,4 @@
+import 'package:flutter_google_maps/models/image_model.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,6 +23,16 @@ class ImageRepo extends GetxService {
   Future<bool> saveImageList(String token) async {
     apiClient.token = token;
     apiClient.updateHeader(token);
-    return await sharedPreferences.setString(AppConstans.TOKEN, token);
+    return await sharedPreferences.setString(
+      AppConstans.TOKEN,
+      token,
+    );
+  }
+
+  Future<Response> postImage(ImageModel imageModel) async {
+    return await apiClient.postData(
+      AppConstans.POST_IMAGE_URL,
+      imageModel.toJson(),
+    );
   }
 }

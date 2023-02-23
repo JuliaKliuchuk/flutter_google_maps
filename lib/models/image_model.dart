@@ -3,8 +3,8 @@ class ImageModel {
   String? base64Image;
   String? url;
   int? date;
-  int? lat;
-  int? lng;
+  double? lat;
+  double? lng;
 
   ImageModel({
     this.id,
@@ -24,9 +24,7 @@ class ImageModel {
   }
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'base64Image': base64Image,
-      'url': url,
       'date': date,
       'lat': lat,
       'lng': lng,
