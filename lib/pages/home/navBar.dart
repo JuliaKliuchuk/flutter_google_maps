@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../routes/route.dart';
 
 class NavBar extends StatelessWidget {
   const NavBar({super.key});
@@ -28,7 +31,7 @@ class NavBar extends StatelessWidget {
             ),
             title: const Text('Photos'),
             onTap: () {
-              Navigator.pop(context);
+              Get.toNamed(RouteHelper.getInitial());
             },
           ),
           ListTile(
@@ -39,7 +42,7 @@ class NavBar extends StatelessWidget {
             ),
             title: const Text('Map'),
             onTap: () {
-              Navigator.pop(context);
+              Get.toNamed(RouteHelper.getMapPage());
             },
           ),
         ],

@@ -28,6 +28,8 @@ class CommentController extends GetxController {
   }
 
   Future<void> getCommentList(int imageId) async {
+    // update();
+
     Response response = await commentRepo.getCommentList(imageId);
 
     log('CommentController response ----${response.body}');

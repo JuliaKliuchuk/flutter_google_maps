@@ -22,14 +22,14 @@ Future<void> init() async {
       sharedPreferences: Get.find(),
     ),
   );
+
+  // repository
   Get.lazyPut(
     () => AuthRepo(
       apiClient: Get.find(),
       sharedPreferences: Get.find(),
     ),
   );
-
-  // repository
   Get.lazyPut(() => ImageRepo(
         apiClient: Get.find(),
         sharedPreferences: Get.find(),
@@ -43,7 +43,5 @@ Future<void> init() async {
   Get.lazyPut(() => ImageController(
         imageRepo: Get.find(),
       ));
-  Get.lazyPut(() => CommentController(
-        commentRepo: Get.find(),
-      ));
+  Get.lazyPut(() => CommentController(commentRepo: Get.find()), fenix: true);
 }

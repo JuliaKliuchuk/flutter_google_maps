@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_maps/pages/home/navBar.dart';
 import 'package:get/get.dart';
 
+import '../../controllers/comment_controller.dart';
 import '../../controllers/images_controller.dart';
 import '../../routes/route.dart';
 import '../../widgets/custom_snack_bar.dart';
@@ -47,6 +48,9 @@ class _MainPageState extends State<MainPage> {
                     child: GestureDetector(
                       onTap: () {
                         Get.toNamed(RouteHelper.getImageDetailPage(index));
+                        int id = imageController.imageList[index].id!;
+                        Get.find<CommentController>().setImgId(id);
+                        Get.find<CommentController>().getCommentList(id);
                       },
                       onLongPress: () {
                         _showAlertDialog(imageController.imageList[index].id!);
