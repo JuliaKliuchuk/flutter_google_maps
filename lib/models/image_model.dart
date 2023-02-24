@@ -33,19 +33,19 @@ class ImageModel {
   }
 }
 
-class Images {
+class Image {
   late List<ImageModel> _images;
   List<ImageModel> get images => _images;
 
-  Images({required images}) {
+  Image({required images}) {
     images = images;
   }
 
-  Images.fromJson(Map<String, dynamic> json) {
+  Image.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
       _images = <ImageModel>[];
-      json['data'].forEach((v) {
-        _images.add(ImageModel.fromJson(v));
+      json['data'].forEach((el) {
+        _images.add(ImageModel.fromJson(el));
       });
     } else {
       _images = <ImageModel>[];

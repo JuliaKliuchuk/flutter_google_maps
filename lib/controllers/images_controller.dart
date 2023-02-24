@@ -42,7 +42,7 @@ class ImageController extends GetxController {
 
     if (response.statusCode == 200) {
       _imageList = [];
-      _imageList.addAll(Images.fromJson(response.body).images);
+      _imageList.addAll(Image.fromJson(response.body).images);
 
       _isLoaded = true;
       update();
@@ -104,7 +104,7 @@ class ImageController extends GetxController {
   Future getCurrentPosition() async {
     Position currentPosition = await _geolocatorPlatform.getCurrentPosition();
 
-    final DateFormat format = DateFormat('dd-MM-yyyy');
+    final DateFormat format = DateFormat('yyyy-MM-dd');
     final String formatted = format.format(DateTime.now()).toString();
     int date = int.parse(formatted.replaceAll('-', ''));
 
@@ -116,6 +116,12 @@ class ImageController extends GetxController {
     );
     _isLoaded = false;
     update();
+  }
+
+  String parseDate(int date) {
+    DateTime dataTime = DateTime.parse(date.toString());
+    var result = DateFormat('dd-MM-yyyy').format(dataTime);
+    return result;
   }
 
   Future<Response> postImage(ImageModel imageModel) async {
