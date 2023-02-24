@@ -21,7 +21,8 @@ class _MainPageState extends State<MainPage> {
 
   void postImage(ImageController imageController) async {
     await imageController.getImage();
-    imageController.postImage(imageController.imageData).then((resp) {
+    var test = Get.find<ImageController>().imageData;
+    imageController.postImage(test).then((resp) {
       if (resp.statusCode == 200) {
         Get.find<ImageController>().getImageList();
       } else {
@@ -45,8 +46,7 @@ class _MainPageState extends State<MainPage> {
                     alignment: Alignment.center,
                     child: GestureDetector(
                       onTap: () {
-                        Get.toNamed(RouteHelper.getImageDetailPage(
-                            imageController.imageList[index].id!));
+                        Get.toNamed(RouteHelper.getImageDetailPage(index));
                       },
                       onLongPress: () {
                         _showAlertDialog(imageController.imageList[index].id!);
@@ -73,11 +73,8 @@ class _MainPageState extends State<MainPage> {
                           Padding(
                             padding:
                                 const EdgeInsets.only(left: 10.0, top: 5.0),
-                            child: Text(
-                              imageController.imageList[index].date.toString(),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                            child: Text(imageController.parseDate(
+                                imageController.imageList[index].date)),
                           ),
                         ],
                       ),
