@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_maps/pages/home/navBar.dart';
+import 'package:flutter_google_maps/widgets/navBar.dart';
 import 'package:get/get.dart';
 
-import '../../controllers/comment_controller.dart';
-import '../../controllers/images_controller.dart';
-import '../../routes/route.dart';
-import '../../widgets/custom_snack_bar.dart';
+import '../../../controllers/comment_controller.dart';
+import '../../../controllers/images_controller.dart';
+import '../../../routes/route.dart';
+import '../../../widgets/custom_snack_bar.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});

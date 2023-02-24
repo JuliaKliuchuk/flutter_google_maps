@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_maps/pages/home/navBar.dart';
+import 'package:flutter_google_maps/widgets/navBar.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});

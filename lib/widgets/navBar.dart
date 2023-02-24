@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../routes/route.dart';
+import '../routes/route.dart';
 
 class NavBar extends StatelessWidget {
   const NavBar({super.key});

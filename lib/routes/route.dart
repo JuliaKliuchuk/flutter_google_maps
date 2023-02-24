@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
 
 import '../pages/authorization/authorization_page.dart';
-import '../pages/home/image_details_page.dart';
-import '../pages/home/main_page.dart';
-import '../pages/home/map_page.dart';
+import '../pages/home/home/image_details_page.dart';
+import '../pages/home/home/main_page.dart';
+import '../pages/home/map/map_page.dart';
 
 class RouteHelper {
   static const String authorization = '/authorization-page';

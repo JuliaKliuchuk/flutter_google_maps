@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../controllers/comment_controller.dart';
-import '../../controllers/images_controller.dart';
-import '../../widgets/custom_snack_bar.dart';
-import 'chat/comment_widget.dart';
+import '../../../controllers/comment_controller.dart';
+import '../../../controllers/images_controller.dart';
+import '../../../widgets/custom_snack_bar.dart';
+import '../../../widgets/comment_widget.dart';
 
 class ImageDetailsPage extends StatefulWidget {
   final int pageId;

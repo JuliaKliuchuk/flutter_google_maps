@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -31,8 +29,6 @@ class CommentController extends GetxController {
     update();
 
     Response response = await commentRepo.getCommentList(imageId);
-
-    log('CommentController response ----${response.body}');
 
     if (response.statusCode == 200) {
       _commentList = [];
