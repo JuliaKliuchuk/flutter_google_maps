@@ -62,14 +62,16 @@ class _MainPageState extends State<MainPage> {
                           Flexible(
                             flex: 1,
                             fit: FlexFit.tight,
-                            child: Container(
+                            child: SizedBox(
                               height: 300.0,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: NetworkImage(
-                                      imageController.imageList[index].url!),
-                                ),
+                              child: Image.network(
+                                imageController.imageList[index]
+                                    .url!, // this image doesn't exist
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset('assets/not_found.png',
+                                      fit: BoxFit.cover);
+                                },
                               ),
                             ),
                           ),

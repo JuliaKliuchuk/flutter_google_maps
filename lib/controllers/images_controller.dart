@@ -38,6 +38,8 @@ class ImageController extends GetxController {
   ImageModel get imageData => _imageData;
 
   Future<void> getImageList() async {
+    update();
+
     Response response = await imageRepo.getImageList();
 
     if (response.statusCode == 200) {
@@ -56,7 +58,7 @@ class ImageController extends GetxController {
         source: ImageSource.camera,
         maxHeight: 1280,
         maxWidth: 1280,
-        imageQuality: 5,
+        imageQuality: 50,
       ))!;
 
       if (_pickedImg.path == '') return _pickedImg;
