@@ -48,6 +48,9 @@ class _MainPageState extends State<MainPage> {
                         Get.toNamed(RouteHelper.getImageDetailPage(
                             imageController.imageList[index].id!));
                       },
+                      onLongPress: () {
+                        _showAlertDialog(imageController.imageList[index].id!);
+                      },
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -99,5 +102,42 @@ class _MainPageState extends State<MainPage> {
         ),
       );
     });
+  }
+
+  Future<void> _showAlertDialog(int id) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return GetBuilder<ImageController>(builder: (imageController) {
+          return AlertDialog(
+            title: const Text('Delete image'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: const <Widget>[
+                  Text('Are you sure you want to delete the photo?'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('No'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: const Text('Yes'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  imageController.deleteImage(id);
+                  Get.find<ImageController>().getImageList();
+                },
+              ),
+            ],
+          );
+        });
+      },
+    );
   }
 }

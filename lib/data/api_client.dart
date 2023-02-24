@@ -52,4 +52,15 @@ class ApiClient extends GetConnect implements GetxService {
       return Response(statusCode: 1, statusText: e.toString());
     }
   }
+
+  Future<Response> deleteData(String url,
+      {Map<String, String>? headers}) async {
+    try {
+      Response response = await delete(url, headers: _mainHeaders);
+
+      return response;
+    } catch (e) {
+      return Response(statusCode: 1, statusText: e.toString());
+    }
+  }
 }

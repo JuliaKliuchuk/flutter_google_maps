@@ -26,4 +26,9 @@ class ImageRepo extends GetxService {
       imageModel.toJson(),
     );
   }
+
+  Future<Response> deleteImage(int imageId) async {
+    return await apiClient
+        .deleteData('${AppConstans.DELETE_IMAGE_URL}$imageId');
+  }
 }

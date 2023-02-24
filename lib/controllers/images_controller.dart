@@ -121,4 +121,8 @@ class ImageController extends GetxController {
   Future<Response> postImage(ImageModel imageModel) async {
     return await imageRepo.postImage(imageModel);
   }
+
+  Future<Response> deleteImage(int imageId) async {
+    return await imageRepo.deleteImage(imageId);
+  }
 }
