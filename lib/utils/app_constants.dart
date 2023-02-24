@@ -8,7 +8,7 @@ class AppConstans {
   static const String LOGIN_URL = '/api/account/signin';
 
 // images
-  static const String IMAGE_URL = '/api/image';
+  static const String GET_IMAGE_URL = '/api/image';
   static const String POST_IMAGE_URL = '/api/image';
   static const String DELETE_IMAGE_URL = '/api/image/';
 

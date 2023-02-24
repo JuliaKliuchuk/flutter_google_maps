@@ -73,7 +73,7 @@ class _MainPageState extends State<MainPage> {
                           Padding(
                             padding:
                                 const EdgeInsets.only(left: 10.0, top: 5.0),
-                            child: Text(imageController.parseDate(
+                            child: Text(imageController.convertDate(
                                 imageController.imageList[index].date)),
                           ),
                         ],

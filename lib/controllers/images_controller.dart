@@ -118,7 +118,7 @@ class ImageController extends GetxController {
     update();
   }
 
-  String parseDate(int date) {
+  String convertDate(int date) {
     DateTime dataTime = DateTime.parse(date.toString());
     var result = DateFormat('dd-MM-yyyy').format(dataTime);
     return result;

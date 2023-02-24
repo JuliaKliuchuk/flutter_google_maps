@@ -16,7 +16,7 @@ class ImageRepo extends GetxService {
 
   Future<Response> getImageList() async {
     return await apiClient.getData(
-      '${AppConstans.IMAGE_URL}?page=0',
+      '${AppConstans.GET_IMAGE_URL}?page=0',
     );
   }
 

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/images_controller.dart';
-import 'chat/chat.dart';
 
 class ImageDetailsPage extends StatelessWidget {
   final int pageId;
@@ -12,6 +11,10 @@ class ImageDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var image = Get.find<ImageController>().imageList[pageId];
+
+    //  int id = imageController.imageList[index].id!;
+    //                   Get.find<CommentController>().setImgId(id);
+    //                   Get.find<CommentController>().getCommentList(id);
 
     return Scaffold(
         appBar: AppBar(),
@@ -35,16 +38,15 @@ class ImageDetailsPage extends StatelessWidget {
                         alignment: Alignment.center,
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         color: Colors.grey[350],
-                        child: Text(imageController.parseDate(image.date)),
+                        child: Text(imageController.convertDate(image.date)),
                       ),
                     ],
                   ),
                 ),
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.34,
-                  color: Colors.red[350],
-                  child: const Chat(),
-                ),
+                // SizedBox(
+                //   height: MediaQuery.of(context).size.height * 0.34,
+                //   child: const Chat(),
+                // ),
               ],
             );
           }),
