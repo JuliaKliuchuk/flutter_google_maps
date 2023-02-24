@@ -16,16 +16,7 @@ class ImageRepo extends GetxService {
 
   Future<Response> getImageList() async {
     return await apiClient.getData(
-      '${AppConstans.IMAGE_URL}?page=1',
-    );
-  }
-
-  Future<bool> saveImageList(String token) async {
-    apiClient.token = token;
-    apiClient.updateHeader(token);
-    return await sharedPreferences.setString(
-      AppConstans.TOKEN,
-      token,
+      '${AppConstans.IMAGE_URL}?page=0',
     );
   }
 

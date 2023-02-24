@@ -4,7 +4,7 @@ import 'package:flutter_google_maps/pages/home/navBar.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/images_controller.dart';
-import '../../models/image_model.dart';
+import '../../routes/route.dart';
 import '../../widgets/custom_snack_bar.dart';
 
 class MainPage extends StatefulWidget {
@@ -19,38 +19,13 @@ class _MainPageState extends State<MainPage> {
     await Get.find<ImageController>().getImageList();
   }
 
-  void postImage(ImageController imageController) {
-    imageController.getImage().then((pickedFile) async {
-      late String base64Image;
-      late double lat;
-      late double lng;
-      late int date;
-
-      base64Image = await imageController.pickImageBase64(pickedFile);
-
-      try {
-        imageController.getCurrentPosition().then((position) {
-          lat = position.latitude;
-          lng = position.longitude;
-          date = imageController.formatDate(position.timestamp!);
-
-          ImageModel data = ImageModel(
-            date: date,
-            lat: lat,
-            lng: lng,
-            base64Image: base64Image,
-          );
-
-          imageController.postImage(data).then((resp) {
-            if (resp.statusCode == 200) {
-              Get.find<ImageController>().getImageList();
-            } else {
-              customSnackBar('не удалось отправить фото');
-            }
-          });
-        });
-      } catch (e) {
-        print('error - $e');
+  void postImage(ImageController imageController) async {
+    await imageController.getImage();
+    imageController.postImage(imageController.imageData).then((resp) {
+      if (resp.statusCode == 200) {
+        Get.find<ImageController>().getImageList();
+      } else {
+        customSnackBar('Failed to send photo');
       }
     });
   }
@@ -62,42 +37,59 @@ class _MainPageState extends State<MainPage> {
         appBar: AppBar(),
         body: RefreshIndicator(
           onRefresh: () => _loadResource(),
-          child: GridView.builder(
-            padding: const EdgeInsets.all(20.0),
-            itemCount: 10,
-            itemBuilder: (context, i) => Container(
-              alignment: Alignment.center,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // img
-                  Flexible(
-                    flex: 1,
-                    fit: FlexFit.tight,
-                    child: Container(
-                      height: 300.0,
-                      color: Colors.teal[100],
+          child: imageController.isLoaded
+              ? GridView.builder(
+                  padding: const EdgeInsets.all(20.0),
+                  itemCount: imageController.imageList.length,
+                  itemBuilder: (context, index) => Container(
+                    alignment: Alignment.center,
+                    child: GestureDetector(
+                      onTap: () {
+                        Get.toNamed(RouteHelper.getImageDetailPage(
+                            imageController.imageList[index].id!));
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // img
+                          Flexible(
+                            flex: 1,
+                            fit: FlexFit.tight,
+                            child: Container(
+                              height: 300.0,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: NetworkImage(
+                                      imageController.imageList[index].url!),
+                                ),
+                              ),
+                            ),
+                          ),
+                          // title
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(left: 10.0, top: 5.0),
+                            child: Text(
+                              imageController.imageList[index].date.toString(),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  // title
-                  const Padding(
-                    padding: EdgeInsets.only(left: 10.0, top: 5.0),
-                    child: Text(
-                      'Sometext',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 0.85,
                   ),
-                ],
-              ),
-            ),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              childAspectRatio: 0.85,
-            ),
-          ),
+                )
+              : const Center(
+                  child: CircularProgressIndicator(),
+                ),
         ),
         drawer: const NavBar(),
         floatingActionButton: FloatingActionButton(

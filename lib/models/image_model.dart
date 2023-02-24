@@ -2,7 +2,7 @@ class ImageModel {
   int? id;
   String? base64Image;
   String? url;
-  int? date;
+  dynamic date;
   double? lat;
   double? lng;
 
@@ -22,13 +22,14 @@ class ImageModel {
     lat = json['lat'];
     lng = json['lng'];
   }
+
   Map<String, dynamic> toJson() {
-    return {
-      'base64Image': base64Image,
-      'date': date,
-      'lat': lat,
-      'lng': lng,
-    };
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['base64Image'] = base64Image;
+    data['date'] = date;
+    data['lat'] = lat;
+    data['lng'] = lng;
+    return data;
   }
 }
 
@@ -36,7 +37,7 @@ class Images {
   late List<ImageModel> _images;
   List<ImageModel> get images => _images;
 
-  Product({required images}) {
+  Images({required images}) {
     images = images;
   }
 

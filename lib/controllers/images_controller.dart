@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -28,8 +29,13 @@ class ImageController extends GetxController {
   late Position _position;
   Position get position => _position;
 
-  late PickedFile _pickedFile;
-  PickedFile get pickedFile => _pickedFile;
+  late XFile _pickedImg;
+
+  late String _base64Img;
+  String get base64Img => _base64Img;
+
+  late ImageModel _imageData;
+  ImageModel get imageData => _imageData;
 
   Future<void> getImageList() async {
     Response response = await imageRepo.getImageList();
@@ -43,57 +49,73 @@ class ImageController extends GetxController {
     }
   }
 
-  Future<PickedFile> getImage() async {
+  Future<XFile> getImage() async {
+    _isLoaded = true;
     try {
-      _pickedFile = (await _picker.getImage(
+      _pickedImg = (await _picker.pickImage(
         source: ImageSource.camera,
         maxHeight: 1280,
         maxWidth: 1280,
+        imageQuality: 5,
       ))!;
 
-      // if (_pickedFile == null) return pickedFile;
-    } on PlatformException {
-      if (kDebugMode) {
-        print('error');
-      }
+      if (_pickedImg.path == '') return _pickedImg;
+
+      await imageToBase64(_pickedImg);
+    } catch (e) {
+      print('Error: $e');
     }
-    return pickedFile;
+
+    return _pickedImg;
   }
 
-  Future<String> pickImageBase64(PickedFile pickedFile) async {
-    late String base64Img;
+  Future<String> imageToBase64(XFile image) async {
+    var fileCompress = await compressImg(File(image.path));
+    Uint8List imagebytes =
+        await File(fileCompress!.absolute.path).readAsBytes();
 
-    // read picked image byte data.
-    Uint8List imagebytes = await File(pickedFile.path).readAsBytes();
-    // using base64 encoder convert image into base64 string.
-    base64Img = base64.encode(imagebytes);
+    _base64Img = base64.encode(imagebytes);
 
-    return base64Img;
+    if (_base64Img != '') {
+      await getCurrentPosition();
+    }
+
+    return _base64Img;
   }
 
-  Future<Position> getCurrentPosition() async {
-    Position currentPosition = await _geolocatorPlatform.getCurrentPosition();
+  Future<File?> compressImg(File file) async {
+    final filePath = file.absolute.path;
 
-    _position = Position(
-      longitude: currentPosition.longitude,
-      latitude: currentPosition.latitude,
-      timestamp: DateTime.now(),
-      accuracy: 1,
-      altitude: 1,
-      heading: 1,
-      speed: 1,
-      speedAccuracy: 1,
+    final lastIndex = filePath.lastIndexOf(RegExp(r'.jp'));
+    final splitted = filePath.substring(0, (lastIndex));
+    final outPath = "${splitted}_out${filePath.substring(lastIndex)}";
+
+    var result = await FlutterImageCompress.compressAndGetFile(
+      file.absolute.path,
+      outPath,
+      minWidth: 1280,
+      minHeight: 1280,
+      quality: 5,
     );
 
-    return _position;
+    return result;
   }
 
-  int formatDate(DateTime dateTime) {
-    final DateFormat format = DateFormat('yyyy-MM-dd');
-    final String formatted = format.format(dateTime);
-    var date = int.parse(formatted.toString().replaceAll('-', ''));
+  Future getCurrentPosition() async {
+    Position currentPosition = await _geolocatorPlatform.getCurrentPosition();
 
-    return date;
+    final DateFormat format = DateFormat('dd-MM-yyyy');
+    final String formatted = format.format(DateTime.now()).toString();
+    int date = int.parse(formatted.replaceAll('-', ''));
+
+    _imageData = ImageModel(
+      base64Image: base64Img,
+      date: date,
+      lat: currentPosition.latitude,
+      lng: currentPosition.longitude,
+    );
+    _isLoaded = false;
+    update();
   }
 
   Future<Response> postImage(ImageModel imageModel) async {
