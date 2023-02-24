@@ -28,7 +28,7 @@ class CommentController extends GetxController {
   }
 
   Future<void> getCommentList(int imageId) async {
-    // update();
+    update();
 
     Response response = await commentRepo.getCommentList(imageId);
 
@@ -54,7 +54,7 @@ class CommentController extends GetxController {
     return await commentRepo.postComment(comment, imageId);
   }
 
-  // Future<Response> deleteComment(int commentId, int imageId) async {
-  //   return await commentRepo.deleteComment(commentId, imageId);
-  // }
+  Future<Response> deleteComment(int commentId, int imageId) async {
+    return await commentRepo.deleteComment(commentId, imageId);
+  }
 }

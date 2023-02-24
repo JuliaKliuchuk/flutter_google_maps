@@ -22,8 +22,8 @@ class CommentRepo extends GetxService {
     );
   }
 
-  // Future<Response> deleteComment(int commentId, int imageId) async {
-  //   return await apiClient.deleteData(
-  //       '${AppConstans.DELETE_IMAGE_URL}$imageId/comment/$commentId');
-  // }
+  Future<Response> deleteComment(int commentId, int imageId) async {
+    return await apiClient.deleteData(
+        '${AppConstans.DELETE_IMAGE_URL}$imageId/comment/$commentId');
+  }
 }

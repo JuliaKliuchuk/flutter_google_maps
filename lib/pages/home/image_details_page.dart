@@ -76,6 +76,7 @@ class _ImageDetailsPageState extends State<ImageDetailsPage> {
                         child: SingleChildScrollView(
                           reverse: true,
                           child: ListView.builder(
+                            physics: const BouncingScrollPhysics(),
                             shrinkWrap: true,
                             itemCount: commentController.commentList.length,
                             itemBuilder: ((context, index) {
@@ -83,9 +84,17 @@ class _ImageDetailsPageState extends State<ImageDetailsPage> {
                                   commentController.commentList[index].text!;
                               String date = commentController.convertDate(
                                   commentController.commentList[index].date!);
-                              return CommentWidget(
-                                text: text,
-                                date: date,
+                              return GestureDetector(
+                                onLongPress: () {
+                                  _showAlertDialog(
+                                    commentController.commentList[index].id!,
+                                    image.id!,
+                                  );
+                                },
+                                child: CommentWidget(
+                                  text: text,
+                                  date: date,
+                                ),
                               );
                             }),
                           ),
@@ -131,6 +140,43 @@ class _ImageDetailsPageState extends State<ImageDetailsPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _showAlertDialog(int commentId, int imageId) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return GetBuilder<CommentController>(builder: (commentController) {
+          return AlertDialog(
+            title: const Text('Delete comment'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: const <Widget>[
+                  Text('Are you sure you want to delete the comment?'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('No'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: const Text('Yes'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  commentController.deleteComment(commentId, imageId);
+                  Get.find<CommentController>().getCommentList(imageId);
+                },
+              ),
+            ],
+          );
+        });
+      },
     );
   }
 }
