@@ -41,84 +41,94 @@ class _ImageDetailsPageState extends State<ImageDetailsPage> {
 
     return Scaffold(
       appBar: AppBar(),
-      body: Container(
-        child: Column(
-          children: [
-            GetBuilder<ImageController>(builder: (imageController) {
-              return Column(
-                children: [
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.5,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(image.url!),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    color: Colors.grey[350],
-                    child: Text(imageController.convertDate(image.date)),
-                  ),
-                ],
-              );
-            }),
-            GetBuilder<CommentController>(builder: (commentController) {
-              return Column(
-                children: [
-                  SizedBox(
-                    height: 200,
-                    child: ListView.builder(
-                      itemCount: commentController.commentList.length,
-                      itemBuilder: ((context, index) {
-                        String text =
-                            commentController.commentList[index].text!;
-                        String date = commentController.convertDate(
-                            commentController.commentList[index].date!);
-                        return CommentWidget(
-                          text: text,
-                          date: date,
-                        );
-                      }),
-                    ),
-                  ),
-                  // input
-                  Container(
-                    height: 80,
-                    padding: const EdgeInsets.only(
-                      left: 20,
-                      right: 20,
-                      bottom: 10,
-                    ),
-                    alignment: Alignment.bottomCenter,
-                    decoration: const BoxDecoration(
-                        border: Border(
-                      top: BorderSide(width: 1.0, color: Colors.black12),
-                    )),
-                    child: TextField(
-                      controller: _inputController,
-                      decoration: InputDecoration(
-                        enabledBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.green),
-                        ),
-                        hintText: 'Enter a message',
-                        suffixIcon: IconButton(
-                          color: Colors.green,
-                          onPressed: (() {
-                            postComment(commentController);
-                            _inputController.clear();
-                          }),
-                          icon: const Icon(Icons.send_rounded),
+      body: SizedBox(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              GetBuilder<ImageController>(builder: (imageController) {
+                return Column(
+                  children: [
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: NetworkImage(image.url!),
                         ),
                       ),
                     ),
+                    Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      color: Colors.grey[350],
+                      child: Text(imageController.convertDate(image.date)),
+                    ),
+                  ],
+                );
+              }),
+              GetBuilder<CommentController>(builder: (commentController) {
+                return SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.34,
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 200,
+                        child: SingleChildScrollView(
+                          reverse: true,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: commentController.commentList.length,
+                            itemBuilder: ((context, index) {
+                              String text =
+                                  commentController.commentList[index].text!;
+                              String date = commentController.convertDate(
+                                  commentController.commentList[index].date!);
+                              return CommentWidget(
+                                text: text,
+                                date: date,
+                              );
+                            }),
+                          ),
+                        ),
+                      ),
+
+                      // input
+                      Container(
+                        height: 80,
+                        padding: const EdgeInsets.only(
+                          left: 20,
+                          right: 20,
+                          bottom: 10,
+                        ),
+                        alignment: Alignment.bottomCenter,
+                        decoration: const BoxDecoration(
+                            border: Border(
+                          top: BorderSide(width: 1.0, color: Colors.black12),
+                        )),
+                        child: TextField(
+                          controller: _inputController,
+                          decoration: InputDecoration(
+                            enabledBorder: const UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.green),
+                            ),
+                            hintText: 'Enter a message',
+                            suffixIcon: IconButton(
+                              color: Colors.green,
+                              onPressed: (() {
+                                postComment(commentController);
+                                _inputController.clear();
+                              }),
+                              icon: const Icon(Icons.send_rounded),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              );
-            })
-          ],
+                );
+              })
+            ],
+          ),
         ),
       ),
     );
