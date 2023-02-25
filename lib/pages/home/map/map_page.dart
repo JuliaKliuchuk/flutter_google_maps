@@ -5,8 +5,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../../../controllers/auth_controller.dart';
-
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
 
@@ -15,7 +13,7 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
-  final Position _userPosition = Get.find<AuthController>().userPosition;
+  final Position _userPosition = Get.find<MapController>().getUserPosition();
 
   @override
   Widget build(BuildContext context) {
@@ -26,16 +24,18 @@ class _MapPageState extends State<MapPage> {
       body: GetBuilder<MapController>(builder: (mapController) {
         return Center(
           child: SizedBox(
-              height: MediaQuery.of(context).size.height,
-              child: GoogleMap(
-                initialCameraPosition: CameraPosition(
-                    target:
-                        LatLng(_userPosition.latitude, _userPosition.longitude),
-                    zoom: 7),
-                onMapCreated: (GoogleMapController controller) {
-                  mapController.setMapController(controller);
-                },
-              )),
+            height: MediaQuery.of(context).size.height,
+            child: GoogleMap(
+              initialCameraPosition: CameraPosition(
+                  target:
+                      LatLng(_userPosition.latitude, _userPosition.longitude),
+                  zoom: 7),
+              onMapCreated: (GoogleMapController controller) {
+                mapController.setMapController(controller);
+              },
+              markers: mapController.getMarkers(),
+            ),
+          ),
         );
       }),
       drawer: const NavBar(),
