@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
+import '../../controllers/auth_controller.dart';
 import 'login_screen.dart';
 import 'register_screen.dart';
 
@@ -18,6 +20,8 @@ class _AuthorizationPageState extends State<AuthorizationPage> {
 
   @override
   Widget build(BuildContext context) {
+    Get.find<AuthController>().getUserCurrentPosition();
+
     return DefaultTabController(
       length: myTabs.length,
       child: Scaffold(

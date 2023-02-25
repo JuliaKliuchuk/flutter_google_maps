@@ -1,4 +1,5 @@
 import 'package:flutter_google_maps/models/response_model.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 
 import '../data/repository/auth_repo.dart';
@@ -11,6 +12,9 @@ class AuthController extends GetxController implements GetxService {
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+
+  late Position _userPosition;
+  Position get userPosition => _userPosition;
 
   Future<ResponseModel> registration(AuthModel data) async {
     _isLoading = true;
@@ -53,5 +57,12 @@ class AuthController extends GetxController implements GetxService {
 
     update();
     return responseModel;
+  }
+
+  getUserCurrentPosition() {
+    Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .then((Position position) {
+      _userPosition = position;
+    });
   }
 }

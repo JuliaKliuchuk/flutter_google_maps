@@ -4,10 +4,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../controllers/auth_controller.dart';
 import '../controllers/comment_controller.dart';
 import '../controllers/images_controller.dart';
+import '../controllers/map_controller.dart';
 import '../data/api_client.dart';
 import '../data/repository/auth_repo.dart';
 import '../data/repository/comment_repo.dart';
 import '../data/repository/image_repo.dart';
+import '../data/repository/map_repo.dart';
 import '../utils/app_constants.dart';
 
 Future<void> init() async {
@@ -37,11 +39,24 @@ Future<void> init() async {
   Get.lazyPut(() => CommentRepo(
         apiClient: Get.find(),
       ));
+  Get.lazyPut(() => MapRepo(
+        apiClient: Get.find(),
+      ));
 
   // controllers
-  Get.lazyPut(() => AuthController(authRepo: Get.find()));
+  Get.lazyPut(() => AuthController(
+        authRepo: Get.find(),
+      ));
+
   Get.lazyPut(() => ImageController(
         imageRepo: Get.find(),
       ));
+
   Get.lazyPut(() => CommentController(commentRepo: Get.find()), fenix: true);
+
+  Get.lazyPut(
+      () => MapController(
+            mapRepo: Get.find(),
+          ),
+      fenix: true);
 }
