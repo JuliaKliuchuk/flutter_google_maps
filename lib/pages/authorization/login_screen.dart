@@ -102,7 +102,7 @@ class _LoginState extends State<Login> {
   String? _validatePass(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter password';
-    } else if (value.length != 8) {
+    } else if (value.length < 8) {
       return 'Password can not be less than 8 characters';
     } else {
       return null;
