@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -54,8 +52,15 @@ class ApiClient extends GetConnect implements GetxService {
     try {
       Response response = await post(url, body, headers: _mainHeaders);
 
-      log('response body---${response.body}');
+      return response;
+    } catch (e) {
+      return Response(statusCode: 1, statusText: e.toString());
+    }
+  }
 
+  Future<Response> registration(String url, dynamic body) async {
+    try {
+      Response response = await post(url, body);
       return response;
     } catch (e) {
       return Response(statusCode: 1, statusText: e.toString());
