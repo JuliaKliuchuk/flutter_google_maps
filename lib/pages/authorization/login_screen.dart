@@ -16,8 +16,8 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
 
-  final _loginController = TextEditingController(text: 'yuliya');
-  final _passController = TextEditingController(text: '12345678');
+  final _loginController = TextEditingController();
+  final _passController = TextEditingController();
 
   void login(AuthController authController) {
     String login = _loginController.text.trim();
