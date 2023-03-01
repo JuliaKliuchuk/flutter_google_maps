@@ -29,12 +29,12 @@ class ImageController extends GetxController {
   late Position _position;
   Position get position => _position;
 
-  late XFile _pickedImg;
+  late XFile _pickedImg = XFile('');
 
   late String _base64Img;
   String get base64Img => _base64Img;
 
-  late ImageModel _imageData;
+  late ImageModel _imageData = ImageModel();
   ImageModel get imageData => _imageData;
 
   Future<void> getImageList() async {
@@ -53,6 +53,7 @@ class ImageController extends GetxController {
 
   Future<XFile> getImage() async {
     _isLoaded = true;
+
     try {
       _pickedImg = (await _picker.pickImage(
         source: ImageSource.camera,
@@ -127,7 +128,10 @@ class ImageController extends GetxController {
   }
 
   Future<Response> postImage(ImageModel imageModel) async {
-    return await imageRepo.postImage(imageModel);
+    var image = await imageRepo.postImage(imageModel);
+    _pickedImg = XFile('');
+    _imageData = ImageModel();
+    return image;
   }
 
   Future<Response> deleteImage(int imageId) async {

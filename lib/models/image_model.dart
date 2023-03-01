@@ -18,16 +18,13 @@ class ImageModel {
   ImageModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     url = json['url'];
-    base64Image = json['base64Image'];
     date = json['date'];
     lat = json['lat'];
     lng = json['lng'];
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['url'] = url;
+  Map<String, Object?> toJson() {
+    final Map<String, Object?> data = <String, dynamic>{};
     data['base64Image'] = base64Image;
     data['date'] = date;
     data['lat'] = lat;

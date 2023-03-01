@@ -21,15 +21,21 @@ class _MainPageState extends State<MainPage> {
   }
 
   void postImage(ImageController imageController) async {
-    await imageController.getImage();
-    var test = Get.find<ImageController>().imageData;
-    imageController.postImage(test).then((resp) {
-      if (resp.statusCode == 200) {
-        Get.find<ImageController>().getImageList();
-      } else {
-        customSnackBar('Failed to send photo');
-      }
-    });
+    var imageFile = await imageController.getImage();
+
+    if (imageFile.path != '') {
+      var imageData = Get.find<ImageController>().imageData;
+
+      imageController.postImage(imageData).then((resp) {
+        if (resp.statusCode == 200) {
+          Get.find<ImageController>().getImageList();
+        } else {
+          customSnackBar('Failed to send photo');
+        }
+      });
+    } else {
+      return;
+    }
   }
 
   @override
