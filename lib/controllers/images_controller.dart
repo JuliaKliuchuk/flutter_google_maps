@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -8,14 +7,20 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:drift/drift.dart' as drift;
 
 import '../data/repository/image_repo.dart';
+import '../database/database.dart';
 import '../models/image_model.dart';
 
 class ImageController extends GetxController {
   final ImageRepo imageRepo;
+  final Database db;
 
-  ImageController({required this.imageRepo});
+  ImageController({
+    required this.db,
+    required this.imageRepo,
+  });
 
   late List<ImageModel> _imageList = [];
   List<ImageModel> get imageList => _imageList;
@@ -45,6 +50,21 @@ class ImageController extends GetxController {
     if (response.statusCode == 200) {
       _imageList = [];
       _imageList.addAll(Image.fromJson(response.body).images);
+
+      if (_imageList.isNotEmpty) {
+        for (var data in _imageList) {
+          db.createOrUpdateUser(
+            ImageCompanion(
+              id: drift.Value(data.id!),
+              url: drift.Value(data.url!),
+              base64Image: drift.Value(data.base64Image ?? ''),
+              date: drift.Value(data.date!),
+              lat: drift.Value(data.lat!),
+              lng: drift.Value(data.lng!),
+            ),
+          );
+        }
+      }
 
       _isLoaded = true;
       update();

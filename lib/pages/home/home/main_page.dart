@@ -1,11 +1,11 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_maps/database/database.dart';
 import 'package:flutter_google_maps/widgets/navBar.dart';
 import 'package:get/get.dart';
 
-import '../../../controllers/comment_controller.dart';
 import '../../../controllers/images_controller.dart';
-import '../../../routes/route.dart';
 import '../../../widgets/custom_snack_bar.dart';
 
 class MainPage extends StatefulWidget {
@@ -16,8 +16,20 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  final _db = Get.find<ImageController>().db;
+
   Future<void> _loadResource() async {
     await Get.find<ImageController>().getImageList();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _db.getImages().then((value) => log('image -------$value'));
+    // _db.watchImagesList.listen((dataImage) {
+    //   log('Image-item in database: $dataImage');
+    // });
   }
 
   void postImage(ImageController imageController) async {
@@ -46,58 +58,75 @@ class _MainPageState extends State<MainPage> {
         body: RefreshIndicator(
           onRefresh: () => _loadResource(),
           child: imageController.isLoaded
-              ? GridView.builder(
-                  padding: const EdgeInsets.all(20.0),
-                  itemCount: imageController.imageList.length,
-                  itemBuilder: (context, index) => Container(
-                    alignment: Alignment.center,
-                    child: GestureDetector(
-                      onTap: () {
-                        Get.toNamed(RouteHelper.getImageDetailPage(index));
-                        int id = imageController.imageList[index].id!;
-                        Get.find<CommentController>().setImgId(id);
-                        Get.find<CommentController>().getCommentList(id);
-                      },
-                      onLongPress: () {
-                        _showAlertDialog(imageController.imageList[index].id!);
-                      },
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // img
-                          Flexible(
-                            flex: 1,
-                            fit: FlexFit.tight,
-                            child: SizedBox(
-                              height: 300.0,
-                              child: Image.network(
-                                imageController.imageList[index]
-                                    .url!, // this image doesn't exist
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Image.asset('assets/not_found.png',
-                                      fit: BoxFit.cover);
-                                },
-                              ),
+              ? StreamBuilder<List<ImageData>>(
+                  stream: _db.watchImagesList,
+                  builder: ((context, snapshot) {
+                    final List<ImageData>? imageData = snapshot.data;
+
+                    if (snapshot.connectionState != ConnectionState.active) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Text(snapshot.error.toString()),
+                      );
+                    }
+
+                    if (imageData != null) {
+                      return GridView.builder(
+                        padding: const EdgeInsets.all(20.0),
+                        itemCount: imageData.length,
+                        itemBuilder: (context, index) {
+                          final image = imageData[index];
+                          return Container(
+                            alignment: Alignment.center,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                // img
+                                Flexible(
+                                  flex: 1,
+                                  fit: FlexFit.tight,
+                                  child: SizedBox(
+                                    height: 300.0,
+                                    child: Image.network(
+                                      image.url, // this image doesn't exist
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return Image.asset(
+                                            'assets/not_found.png',
+                                            fit: BoxFit.cover);
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                // title
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 10.0, top: 5.0),
+                                  child: Text(
+                                      imageController.convertDate(image.date)),
+                                ),
+                              ],
                             ),
-                          ),
-                          // title
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(left: 10.0, top: 5.0),
-                            child: Text(imageController.convertDate(
-                                imageController.imageList[index].date)),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    childAspectRatio: 0.85,
-                  ),
+                          );
+                        },
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          childAspectRatio: 0.85,
+                        ),
+                      );
+                    }
+
+                    return const Text('No data');
+                  }),
                 )
               : const Center(
                   child: CircularProgressIndicator(),

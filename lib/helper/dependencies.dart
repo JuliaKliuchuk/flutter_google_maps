@@ -10,12 +10,15 @@ import '../data/repository/auth_repo.dart';
 import '../data/repository/comment_repo.dart';
 import '../data/repository/image_repo.dart';
 import '../data/repository/map_repo.dart';
+import '../database/database.dart';
 import '../utils/app_constants.dart';
 
 Future<void> init() async {
   final sharedPreferences = await SharedPreferences.getInstance();
+  final db = Database();
 
   Get.lazyPut(() => sharedPreferences);
+  Get.lazyPut(() => db);
 
   // api client
   Get.lazyPut(
@@ -49,6 +52,7 @@ Future<void> init() async {
       ));
 
   Get.lazyPut(() => ImageController(
+        db: Get.find(),
         imageRepo: Get.find(),
       ));
 
