@@ -1,13 +1,19 @@
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:drift/drift.dart' as drift;
 
+import 'package:flutter_google_maps/database/database.dart';
 import '../data/repository/comment_repo.dart';
 import '../models/comment_model.dart';
 
 class CommentController extends GetxController {
   final CommentRepo commentRepo;
+  final Database db;
 
-  CommentController({required this.commentRepo});
+  CommentController({
+    required this.db,
+    required this.commentRepo,
+  });
 
   late int _imageId;
   int get imageId => _imageId;
@@ -33,6 +39,17 @@ class CommentController extends GetxController {
     if (response.statusCode == 200) {
       _commentList = [];
       _commentList.addAll(Comment.fromJson(response.body).comments);
+
+      for (var data in _commentList) {
+        db.commentDao.createOrUpdateComment(
+          CommentCompanion(
+            id: drift.Value(data.id!),
+            imageId: drift.Value(imageId),
+            date: drift.Value(data.date!),
+            textComment: drift.Value(data.text!),
+          ),
+        );
+      }
 
       _isLoaded = true;
       update();

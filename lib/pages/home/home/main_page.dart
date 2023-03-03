@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_maps/controllers/comment_controller.dart';
 import 'package:flutter_google_maps/database/database.dart';
+import 'package:flutter_google_maps/routes/route.dart';
 import 'package:flutter_google_maps/widgets/navBar.dart';
 import 'package:get/get.dart';
 
@@ -24,11 +26,6 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
-
-    // _db.getImages().then((value) => log('image -------$value'));
-    // _db.watchImagesList.listen((dataImage) {
-    //   log('Image-item in database: $dataImage');
-    // });
   }
 
   void postImage(ImageController imageController) async {
@@ -79,38 +76,49 @@ class _MainPageState extends State<MainPage> {
                         padding: const EdgeInsets.all(20.0),
                         itemCount: imageData.length,
                         itemBuilder: (context, index) {
-                          final image = imageData[index];
-                          return Container(
-                            alignment: Alignment.center,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                // img
-                                Flexible(
-                                  flex: 1,
-                                  fit: FlexFit.tight,
-                                  child: SizedBox(
-                                    height: 300.0,
-                                    child: Image.network(
-                                      image.url, // this image doesn't exist
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) {
-                                        return Image.asset(
-                                            'assets/not_found.png',
-                                            fit: BoxFit.cover);
-                                      },
+                          return GestureDetector(
+                            onTap: () {
+                              Get.toNamed(RouteHelper.getImageDetailPage(
+                                  imageData[index].id));
+                              Get.find<CommentController>()
+                                  .getCommentList(imageData[index].id);
+                            },
+                            onLongPress: () {
+                              _showAlertDialog(imageData[index].id);
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  // img
+                                  Flexible(
+                                    flex: 1,
+                                    fit: FlexFit.tight,
+                                    child: SizedBox(
+                                      height: 300.0,
+                                      child: Image.network(
+                                        imageData[index]
+                                            .url, // this image doesn't exist
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                          return Image.asset(
+                                              'assets/not_found.png',
+                                              fit: BoxFit.cover);
+                                        },
+                                      ),
                                     ),
                                   ),
-                                ),
-                                // title
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 10.0, top: 5.0),
-                                  child: Text(
-                                      imageController.convertDate(image.date)),
-                                ),
-                              ],
+                                  // title
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 10.0, top: 5.0),
+                                    child: Text(imageController
+                                        .convertDate(imageData[index].date)),
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         },

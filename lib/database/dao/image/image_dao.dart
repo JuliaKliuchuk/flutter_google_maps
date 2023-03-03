@@ -35,11 +35,11 @@ class ImageDao extends DatabaseAccessor<Database> {
   }
 
   // add image
-  // Future insertImage(ImageCompanion imageData) async {
-  //   return await into(image).insert(imageData);
-  // }
+  Future insertImage(ImageCompanion imageData) async {
+    return await into(db.image).insert(imageData);
+  }
 
-  Future createOrUpdateUser(ImageCompanion imageData) {
+  Future createOrUpdateImage(ImageCompanion imageData) {
     return into(db.image).insertOnConflictUpdate(imageData);
   }
 

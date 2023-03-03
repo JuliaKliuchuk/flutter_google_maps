@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../controllers/comment_controller.dart';
-import '../../../controllers/images_controller.dart';
-import '../../../widgets/custom_snack_bar.dart';
-import '../../../widgets/comment_widget.dart';
+import 'package:flutter_google_maps/controllers/comment_controller.dart';
+import 'package:flutter_google_maps/controllers/images_controller.dart';
+import 'package:flutter_google_maps/widgets/comment_widget.dart';
+import 'package:flutter_google_maps/widgets/custom_snack_bar.dart';
+import 'package:flutter_google_maps/database/database.dart';
 
 class ImageDetailsPage extends StatefulWidget {
   final int pageId;
@@ -16,7 +17,148 @@ class ImageDetailsPage extends StatefulWidget {
 }
 
 class _ImageDetailsPageState extends State<ImageDetailsPage> {
+  late Database _db;
+  late ImageData _imageData;
+  late List<CommentData> _comments = [];
+  bool _isImageLoaded = false;
+  bool _isCommentsLoaded = false;
   final _inputController = TextEditingController();
+
+  @override
+  initState() {
+    super.initState();
+
+    _db = Get.find<ImageController>().db;
+
+    getImageData().then((result) {
+      setState(() {
+        _isImageLoaded = true;
+        _imageData = result;
+      });
+      getComments().then((result) {
+        setState(() {
+          _comments = result;
+          _isCommentsLoaded = true;
+        });
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: SizedBox(
+          child: SingleChildScrollView(
+        child: Column(
+          children: [
+            _isImageLoaded
+                ? GetBuilder<ImageController>(builder: (imageController) {
+                    return Column(
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.5,
+                          child: Image.network(
+                            _imageData.url,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset('assets/not_found.png',
+                                  fit: BoxFit.cover);
+                            },
+                          ),
+                        ),
+                        Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          color: Colors.grey[350],
+                          child: Text(
+                              imageController.convertDate(_imageData.date)),
+                        )
+                      ],
+                    );
+                  })
+                : const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+            _isCommentsLoaded
+                ? GetBuilder<CommentController>(builder: (commentController) {
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.34,
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 200,
+                            child: SingleChildScrollView(
+                              reverse: true,
+                              child: ListView.builder(
+                                physics: const BouncingScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: _comments.length,
+                                itemBuilder: ((context, index) {
+                                  String text = _comments[index].textComment;
+                                  String date = commentController
+                                      .convertDate(_comments[index].date);
+                                  return GestureDetector(
+                                    onLongPress: () {
+                                      _showAlertDialog(
+                                        _comments[index].id,
+                                        _imageData.id,
+                                      );
+                                    },
+                                    child: CommentWidget(
+                                      text: text,
+                                      date: date,
+                                    ),
+                                  );
+                                }),
+                              ),
+                            ),
+                          ),
+
+                          // input
+                          Container(
+                            height: 80,
+                            padding: const EdgeInsets.only(
+                              left: 20,
+                              right: 20,
+                              bottom: 10,
+                            ),
+                            alignment: Alignment.bottomCenter,
+                            decoration: const BoxDecoration(
+                                border: Border(
+                              top:
+                                  BorderSide(width: 1.0, color: Colors.black12),
+                            )),
+                            child: TextField(
+                              controller: _inputController,
+                              decoration: InputDecoration(
+                                enabledBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.green),
+                                ),
+                                hintText: 'Enter a message',
+                                suffixIcon: IconButton(
+                                  color: Colors.green,
+                                  onPressed: (() {
+                                    postComment(commentController);
+                                    _inputController.clear();
+                                  }),
+                                  icon: const Icon(Icons.send_rounded),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  })
+                : const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+          ],
+        ),
+      )),
+    );
+  }
 
   void postComment(CommentController commentController) {
     String comment = _inputController.text.trim();
@@ -35,112 +177,12 @@ class _ImageDetailsPageState extends State<ImageDetailsPage> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    var image = Get.find<ImageController>().imageList[widget.pageId];
+  Future<ImageData> getImageData() async {
+    return await _db.imageDao.getImage(widget.pageId);
+  }
 
-    return Scaffold(
-      appBar: AppBar(),
-      body: SizedBox(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              GetBuilder<ImageController>(builder: (imageController) {
-                return Column(
-                  children: [
-                    Container(
-                      height: MediaQuery.of(context).size.height * 0.5,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(image.url!),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      color: Colors.grey[350],
-                      child: Text(imageController.convertDate(image.date)),
-                    ),
-                  ],
-                );
-              }),
-              GetBuilder<CommentController>(builder: (commentController) {
-                return SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.34,
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 200,
-                        child: SingleChildScrollView(
-                          reverse: true,
-                          child: ListView.builder(
-                            physics: const BouncingScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: commentController.commentList.length,
-                            itemBuilder: ((context, index) {
-                              String text =
-                                  commentController.commentList[index].text!;
-                              String date = commentController.convertDate(
-                                  commentController.commentList[index].date!);
-                              return GestureDetector(
-                                onLongPress: () {
-                                  _showAlertDialog(
-                                    commentController.commentList[index].id!,
-                                    image.id!,
-                                  );
-                                },
-                                child: CommentWidget(
-                                  text: text,
-                                  date: date,
-                                ),
-                              );
-                            }),
-                          ),
-                        ),
-                      ),
-
-                      // input
-                      Container(
-                        height: 80,
-                        padding: const EdgeInsets.only(
-                          left: 20,
-                          right: 20,
-                          bottom: 10,
-                        ),
-                        alignment: Alignment.bottomCenter,
-                        decoration: const BoxDecoration(
-                            border: Border(
-                          top: BorderSide(width: 1.0, color: Colors.black12),
-                        )),
-                        child: TextField(
-                          controller: _inputController,
-                          decoration: InputDecoration(
-                            enabledBorder: const UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.green),
-                            ),
-                            hintText: 'Enter a message',
-                            suffixIcon: IconButton(
-                              color: Colors.green,
-                              onPressed: (() {
-                                postComment(commentController);
-                                _inputController.clear();
-                              }),
-                              icon: const Icon(Icons.send_rounded),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              })
-            ],
-          ),
-        ),
-      ),
-    );
+  Future<List<CommentData>> getComments() async {
+    return await _db.commentDao.getComments(_imageData.id);
   }
 
   Future<void> _showAlertDialog(int commentId, int imageId) async {

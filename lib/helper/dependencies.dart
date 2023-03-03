@@ -56,7 +56,12 @@ Future<void> init() async {
         imageRepo: Get.find(),
       ));
 
-  Get.lazyPut(() => CommentController(commentRepo: Get.find()), fenix: true);
+  Get.lazyPut(
+      () => CommentController(
+            db: Get.find(),
+            commentRepo: Get.find(),
+          ),
+      fenix: true);
 
   Get.lazyPut(
       () => MapController(

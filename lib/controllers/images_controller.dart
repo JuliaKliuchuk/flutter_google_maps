@@ -53,7 +53,7 @@ class ImageController extends GetxController {
       if (_imageList.isNotEmpty) {
         for (var data in _imageList) {
           // checkImagesInDb(data.id!);
-          db.imageDao.createOrUpdateUser(
+          db.imageDao.createOrUpdateImage(
             ImageCompanion(
               id: drift.Value(data.id!),
               url: drift.Value(data.url!),

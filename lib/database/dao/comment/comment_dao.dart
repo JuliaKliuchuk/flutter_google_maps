@@ -9,9 +9,13 @@ class CommentDao extends DatabaseAccessor<Database> {
   CommentDao(Database db) : super(db);
 
   // get comments list
-  Future<SimpleSelectStatement<$CommentTable, CommentData>> getComments(
-      int imageId) async {
-    return select(db.comment)..where((tbl) => tbl.imageId.equals(imageId));
+  Future<List<CommentData>> getComments(int imageId) {
+    return (select(db.comment)..where((tbl) => tbl.imageId.equals(imageId)))
+        .get();
+  }
+
+  Future createOrUpdateComment(CommentCompanion commentData) {
+    return into(db.comment).insertOnConflictUpdate(commentData);
   }
 
 // add comment
