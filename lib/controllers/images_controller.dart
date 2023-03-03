@@ -53,7 +53,8 @@ class ImageController extends GetxController {
 
       if (_imageList.isNotEmpty) {
         for (var data in _imageList) {
-          db.createOrUpdateUser(
+          // checkImagesInDb(data.id!);
+          db.imageDao.createOrUpdateUser(
             ImageCompanion(
               id: drift.Value(data.id!),
               url: drift.Value(data.url!),
@@ -70,6 +71,16 @@ class ImageController extends GetxController {
       update();
     }
   }
+
+  // checkImagesInDb(int imageId) async {
+  //   var data = await db.getImage(imageId);
+  //   if (data.toJson().isNotEmpty) {
+  //     log('true');
+  //     log('image -------$data');
+  //   } else {
+  //     log('false');
+  //   }
+  // }
 
   Future<XFile> getImage() async {
     _isLoaded = true;

@@ -574,6 +574,8 @@ abstract class _$Database extends GeneratedDatabase {
   _$Database(QueryExecutor e) : super(e);
   late final $ImageTable image = $ImageTable(this);
   late final $CommentTable comment = $CommentTable(this);
+  late final ImageDao imageDao = ImageDao(this as Database);
+  late final CommentDao commentDao = CommentDao(this as Database);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();

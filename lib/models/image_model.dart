@@ -25,6 +25,8 @@ class ImageModel {
 
   Map<String, Object?> toJson() {
     final Map<String, Object?> data = <String, dynamic>{};
+    data['id'] = id;
+    data['url'] = url;
     data['base64Image'] = base64Image;
     data['date'] = date;
     data['lat'] = lat;

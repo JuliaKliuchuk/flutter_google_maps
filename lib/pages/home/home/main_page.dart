@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_maps/database/database.dart';
 import 'package:flutter_google_maps/widgets/navBar.dart';
@@ -26,7 +25,7 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
 
-    _db.getImages().then((value) => log('image -------$value'));
+    // _db.getImages().then((value) => log('image -------$value'));
     // _db.watchImagesList.listen((dataImage) {
     //   log('Image-item in database: $dataImage');
     // });
@@ -59,7 +58,7 @@ class _MainPageState extends State<MainPage> {
           onRefresh: () => _loadResource(),
           child: imageController.isLoaded
               ? StreamBuilder<List<ImageData>>(
-                  stream: _db.watchImagesList,
+                  stream: _db.imageDao.watchImagesList,
                   builder: ((context, snapshot) {
                     final List<ImageData>? imageData = snapshot.data;
 
