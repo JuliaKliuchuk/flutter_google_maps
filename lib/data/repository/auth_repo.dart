@@ -15,7 +15,7 @@ class AuthRepo {
   });
 
   Future<Response> registration(AuthModel data) async {
-    return await apiClient.postData(
+    return await apiClient.registration(
       AppConstans.REGISTRATION_URL,
       data.toJson(),
     );

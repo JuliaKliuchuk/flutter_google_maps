@@ -16,8 +16,8 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
 
-  final _loginController = TextEditingController(text: 'yuliya');
-  final _passController = TextEditingController(text: '12345678');
+  final _loginController = TextEditingController();
+  final _passController = TextEditingController();
 
   void login(AuthController authController) {
     String login = _loginController.text.trim();
@@ -102,7 +102,7 @@ class _LoginState extends State<Login> {
   String? _validatePass(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter password';
-    } else if (value.length != 8) {
+    } else if (value.length < 8) {
       return 'Password can not be less than 8 characters';
     } else {
       return null;

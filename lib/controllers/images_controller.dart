@@ -29,7 +29,6 @@ class ImageController extends GetxController {
   bool get isLoaded => _isLoaded;
 
   final ImagePicker _picker = ImagePicker();
-  final GeolocatorPlatform _geolocatorPlatform = GeolocatorPlatform.instance;
 
   late Position _position;
   Position get position => _position;
@@ -84,7 +83,7 @@ class ImageController extends GetxController {
 
   Future<XFile> getImage() async {
     _isLoaded = true;
-
+    await _determinePosition();
     try {
       _pickedImg = (await _picker.pickImage(
         source: ImageSource.camera,
@@ -103,18 +102,31 @@ class ImageController extends GetxController {
     return _pickedImg;
   }
 
-  Future<String> imageToBase64(XFile image) async {
-    var fileCompress = await compressImg(File(image.path));
-    Uint8List imagebytes =
-        await File(fileCompress!.absolute.path).readAsBytes();
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
 
-    _base64Img = base64.encode(imagebytes);
-
-    if (_base64Img != '') {
-      await getCurrentPosition();
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
     }
 
-    return _base64Img;
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    _position = await Geolocator.getCurrentPosition();
+
+    return _position;
   }
 
   Future<File?> compressImg(File file) async {
@@ -135,8 +147,12 @@ class ImageController extends GetxController {
     return result;
   }
 
-  Future getCurrentPosition() async {
-    Position currentPosition = await _geolocatorPlatform.getCurrentPosition();
+  Future imageToBase64(XFile image) async {
+    var fileCompress = await compressImg(File(image.path));
+    Uint8List imagebytes =
+        await File(fileCompress!.absolute.path).readAsBytes();
+
+    _base64Img = base64.encode(imagebytes);
 
     final DateFormat format = DateFormat('yyyy-MM-dd');
     final String formatted = format.format(DateTime.now()).toString();
@@ -145,9 +161,10 @@ class ImageController extends GetxController {
     _imageData = ImageModel(
       base64Image: base64Img,
       date: date,
-      lat: currentPosition.latitude,
-      lng: currentPosition.longitude,
+      lat: position.latitude,
+      lng: position.longitude,
     );
+
     _isLoaded = false;
     update();
   }
