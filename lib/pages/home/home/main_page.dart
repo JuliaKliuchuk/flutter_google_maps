@@ -183,8 +183,7 @@ class _MainPageState extends State<MainPage> {
                 child: const Text('Yes'),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  // imageController.deleteImage(id);
-                  _db.imageDao.deleteImage(id);
+                  imageController.deleteImage(id);
                   Get.find<ImageController>().getImageList();
                 },
               ),

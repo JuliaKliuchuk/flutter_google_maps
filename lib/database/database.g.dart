@@ -11,7 +11,7 @@ class $ImageTable extends Image with TableInfo<$ImageTable, ImageData> {
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
+      'id', aliasedName, true,
       type: DriftSqlType.int, requiredDuringInsert: false);
   static const VerificationMeta _base64ImageMeta =
       const VerificationMeta('base64Image');
@@ -22,8 +22,8 @@ class $ImageTable extends Image with TableInfo<$ImageTable, ImageData> {
   static const VerificationMeta _urlMeta = const VerificationMeta('url');
   @override
   late final GeneratedColumn<String> url = GeneratedColumn<String>(
-      'url', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+      'url', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _dateMeta = const VerificationMeta('date');
   @override
   late final GeneratedColumn<int> date = GeneratedColumn<int>(
@@ -64,8 +64,6 @@ class $ImageTable extends Image with TableInfo<$ImageTable, ImageData> {
     if (data.containsKey('url')) {
       context.handle(
           _urlMeta, url.isAcceptableOrUnknown(data['url']!, _urlMeta));
-    } else if (isInserting) {
-      context.missing(_urlMeta);
     }
     if (data.containsKey('date')) {
       context.handle(
@@ -95,11 +93,11 @@ class $ImageTable extends Image with TableInfo<$ImageTable, ImageData> {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return ImageData(
       id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+          .read(DriftSqlType.int, data['${effectivePrefix}id']),
       base64Image: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}base64_image'])!,
       url: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}url'])!,
+          .read(DriftSqlType.string, data['${effectivePrefix}url']),
       date: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}date'])!,
       lat: attachedDatabase.typeMapping
@@ -116,25 +114,29 @@ class $ImageTable extends Image with TableInfo<$ImageTable, ImageData> {
 }
 
 class ImageData extends DataClass implements Insertable<ImageData> {
-  final int id;
+  final int? id;
   final String base64Image;
-  final String url;
+  final String? url;
   final int date;
   final double lat;
   final double lng;
   const ImageData(
-      {required this.id,
+      {this.id,
       required this.base64Image,
-      required this.url,
+      this.url,
       required this.date,
       required this.lat,
       required this.lng});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
+    if (!nullToAbsent || id != null) {
+      map['id'] = Variable<int>(id);
+    }
     map['base64_image'] = Variable<String>(base64Image);
-    map['url'] = Variable<String>(url);
+    if (!nullToAbsent || url != null) {
+      map['url'] = Variable<String>(url);
+    }
     map['date'] = Variable<int>(date);
     map['lat'] = Variable<double>(lat);
     map['lng'] = Variable<double>(lng);
@@ -143,9 +145,9 @@ class ImageData extends DataClass implements Insertable<ImageData> {
 
   ImageCompanion toCompanion(bool nullToAbsent) {
     return ImageCompanion(
-      id: Value(id),
+      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
       base64Image: Value(base64Image),
-      url: Value(url),
+      url: url == null && nullToAbsent ? const Value.absent() : Value(url),
       date: Value(date),
       lat: Value(lat),
       lng: Value(lng),
@@ -156,9 +158,9 @@ class ImageData extends DataClass implements Insertable<ImageData> {
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ImageData(
-      id: serializer.fromJson<int>(json['id']),
+      id: serializer.fromJson<int?>(json['id']),
       base64Image: serializer.fromJson<String>(json['base64Image']),
-      url: serializer.fromJson<String>(json['url']),
+      url: serializer.fromJson<String?>(json['url']),
       date: serializer.fromJson<int>(json['date']),
       lat: serializer.fromJson<double>(json['lat']),
       lng: serializer.fromJson<double>(json['lng']),
@@ -168,9 +170,9 @@ class ImageData extends DataClass implements Insertable<ImageData> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
+      'id': serializer.toJson<int?>(id),
       'base64Image': serializer.toJson<String>(base64Image),
-      'url': serializer.toJson<String>(url),
+      'url': serializer.toJson<String?>(url),
       'date': serializer.toJson<int>(date),
       'lat': serializer.toJson<double>(lat),
       'lng': serializer.toJson<double>(lng),
@@ -178,16 +180,16 @@ class ImageData extends DataClass implements Insertable<ImageData> {
   }
 
   ImageData copyWith(
-          {int? id,
+          {Value<int?> id = const Value.absent(),
           String? base64Image,
-          String? url,
+          Value<String?> url = const Value.absent(),
           int? date,
           double? lat,
           double? lng}) =>
       ImageData(
-        id: id ?? this.id,
+        id: id.present ? id.value : this.id,
         base64Image: base64Image ?? this.base64Image,
-        url: url ?? this.url,
+        url: url.present ? url.value : this.url,
         date: date ?? this.date,
         lat: lat ?? this.lat,
         lng: lng ?? this.lng,
@@ -220,9 +222,9 @@ class ImageData extends DataClass implements Insertable<ImageData> {
 }
 
 class ImageCompanion extends UpdateCompanion<ImageData> {
-  final Value<int> id;
+  final Value<int?> id;
   final Value<String> base64Image;
-  final Value<String> url;
+  final Value<String?> url;
   final Value<int> date;
   final Value<double> lat;
   final Value<double> lng;
@@ -237,12 +239,11 @@ class ImageCompanion extends UpdateCompanion<ImageData> {
   ImageCompanion.insert({
     this.id = const Value.absent(),
     required String base64Image,
-    required String url,
+    this.url = const Value.absent(),
     required int date,
     required double lat,
     required double lng,
   })  : base64Image = Value(base64Image),
-        url = Value(url),
         date = Value(date),
         lat = Value(lat),
         lng = Value(lng);
@@ -265,9 +266,9 @@ class ImageCompanion extends UpdateCompanion<ImageData> {
   }
 
   ImageCompanion copyWith(
-      {Value<int>? id,
+      {Value<int?>? id,
       Value<String>? base64Image,
-      Value<String>? url,
+      Value<String?>? url,
       Value<int>? date,
       Value<double>? lat,
       Value<double>? lng}) {
