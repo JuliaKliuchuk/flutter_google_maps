@@ -27,7 +27,6 @@ class _ImageDetailsPageState extends State<ImageDetailsPage> {
   @override
   initState() {
     super.initState();
-
     _db = Get.find<ImageController>().db;
 
     getImageData().then((result) {
@@ -59,7 +58,7 @@ class _ImageDetailsPageState extends State<ImageDetailsPage> {
                         SizedBox(
                           height: MediaQuery.of(context).size.height * 0.5,
                           child: Image.network(
-                            _imageData.url,
+                            _imageData.url!,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return Image.asset('assets/not_found.png',
@@ -102,7 +101,7 @@ class _ImageDetailsPageState extends State<ImageDetailsPage> {
                                     onLongPress: () {
                                       _showAlertDialog(
                                         _comments[index].id,
-                                        _imageData.id,
+                                        _imageData.id!,
                                       );
                                     },
                                     child: CommentWidget(
@@ -182,7 +181,7 @@ class _ImageDetailsPageState extends State<ImageDetailsPage> {
   }
 
   Future<List<CommentData>> getComments() async {
-    return await _db.commentDao.getComments(_imageData.id);
+    return await _db.commentDao.getComments(_imageData.id!);
   }
 
   Future<void> _showAlertDialog(int commentId, int imageId) async {
